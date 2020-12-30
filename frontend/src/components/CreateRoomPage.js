@@ -20,25 +20,25 @@ export default class CreateRoomPage extends Component {
             guestCanPause: true,
             votesToSkip: this.defaultVotes
         };
-        this.handleRoomButtonPressed = this.handleRoomButtonPressed.bind(this);
-        this.handleVotesChange = this.handleVotesChange.bind(this);
-        this.handleGuestCanPauseChange = this.handleGuestCanPauseChange.bind(this);
+        this._handleRoomButtonPressed = this._handleRoomButtonPressed.bind(this);
+        this._handleVotesChange = this._handleVotesChange.bind(this);
+        this._handleGuestCanPauseChange = this._handleGuestCanPauseChange.bind(this);
 
     }
 
-    handleVotesChange(e) {
+    _handleVotesChange(e) {
         this.setState({
             votesToSkip: e.target.value,
         });
     }
 
-    handleGuestCanPauseChange(e) {
+    _handleGuestCanPauseChange(e) {
         this.setState({
             guestCanPause: e.target.value === 'true',
         });
     }
 
-    handleRoomButtonPressed() {
+    _handleRoomButtonPressed() {
         const requestOptions = {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -47,7 +47,7 @@ export default class CreateRoomPage extends Component {
                 guest_can_pause: this.state.guestCanPause
             })
         };
-        fetch('api/create', requestOptions).then((response) => response.json()).then((data) => console.log(data))
+        fetch('/api/create', requestOptions).then((response) => response.json()).then((data) => this.props.history.push('/room/' + data.code))
     }
 
     render() {
@@ -64,7 +64,7 @@ export default class CreateRoomPage extends Component {
                             Guest Control of Playback State
                         </div>
                     </FormHelperText>
-                    <RadioGroup row defaultValue={'true'} onChange={this.handleGuestCanPauseChange}>
+                    <RadioGroup row defaultValue={'true'} onChange={this._handleGuestCanPauseChange}>
                         <FormControlLabel value={'true'} control={<Radio color={'primary'}/>} label={'Play/Pause'}
                                           labelPlacement={'bottom'}/>
                         <FormControlLabel value={'false'} control={<Radio color={'secondary'}/>} label={'No Control'}
@@ -75,7 +75,7 @@ export default class CreateRoomPage extends Component {
             <Grid item xs={12} align="center">
                 <FormControl>
                     <TextField required={'true'} type={'number'} defaultValue={this.defaultVotes}
-                               inputProps={{min: 1, style: {textAlign: 'center'},}} onChange={this.handleVotesChange}>
+                               inputProps={{min: 1, style: {textAlign: 'center'},}} onChange={this._handleVotesChange}>
                         <FormHelperText>
                             <div align={'center'}>
                                 Votes Required to Skip Song
@@ -85,7 +85,7 @@ export default class CreateRoomPage extends Component {
                 </FormControl>
             </Grid>
             <Grid item xs={12} align="center">
-                <Button color={'primary'} variant={'contained'} onClick={this.handleRoomButtonPressed}>
+                <Button color={'primary'} variant={'contained'} onClick={this._handleRoomButtonPressed}>
                     Create A Room
                 </Button>
             </Grid>
