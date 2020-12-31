@@ -81,7 +81,8 @@ class JoinRoomView(APIView):
                 self.request.session['room_code'] = code
                 return Response({'Message': 'Room Joined!'}, status=status.HTTP_200_OK)
             return Response({'Invalid Code': 'No such room exists'}, status=status.HTTP_404_NOT_FOUND)
-        return Response({'Bad Request': 'Invalid post data, did not find room code.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'Bad Request': 'Invalid post data, did not find room code.'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserInRoomView(APIView):
@@ -93,3 +94,17 @@ class UserInRoomView(APIView):
             'code': self.request.session.get('room_code')
         }
         return JsonResponse(data, status=status.HTTP_200_OK)
+
+
+class LeaveRoomView(APIView):
+    def post(self, request, format=None):
+        if 'room_code' in self.request.session:
+            self.request.session.pop('room_code')
+            host_id = self.request.session.session_key
+            rooms = Room.objects.filter(host=host_id)
+            if len(rooms) > 0:
+                room = rooms[0]
+                room.delete()
+                return Response({'Message': 'Success'}, status=status.HTTP_200_OK)
+            return Response({'Invalid Code': 'No such room exists'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Message': 'Success'}, status=status.HTTP_200_OK)
