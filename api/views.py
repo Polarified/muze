@@ -17,7 +17,6 @@ class CreateRoomView(APIView):
     """
     Defines how post requests will act with our data.
     """
-    # queryset = Room.objects.all()
     serializer_class = CreateRoomSerializer
 
     def post(self, request):
@@ -108,3 +107,6 @@ class LeaveRoomView(APIView):
                 return Response({'Message': 'Success'}, status=status.HTTP_200_OK)
             return Response({'Invalid Code': 'No such room exists'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'Message': 'Success'}, status=status.HTTP_200_OK)
+
+# class UpdateRoomView(APIView):
+#     def patch(self, request, format=None):
