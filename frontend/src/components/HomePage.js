@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import JoinRoomPage from "./JoinRoomPage";
 import CreateRoomPage from "./CreateRoomPage";
 import Room from "./Room";
-import { Grid, Button, ButtonGroup, Typography } from '@material-ui/core'
+import {Grid, Button, ButtonGroup, Typography} from '@material-ui/core'
 import {
     BrowserRouter as Router,
     Switch,
@@ -17,6 +17,7 @@ export default class HomePage extends Component {
         this.state = {
             roomCode: null,
         }
+        this._clearRoomCode = this._clearRoomCode.bind(this);
     }
 
     async componentDidMount() {
@@ -51,15 +52,24 @@ export default class HomePage extends Component {
         );
     }
 
+    _clearRoomCode() {
+        this.setState({
+            roomCode: null,
+        });
+    }
+
     render() {
         return (<Router>
             <Switch>
                 <Route exact path='/' render={() => {
-                    return this.state.roomCode ? (<Redirect to={`/room/${this.state.roomCode}`}/>) : this.renderHomePage()
+                    return this.state.roomCode ? (
+                        <Redirect to={`/room/${this.state.roomCode}`}/>) : this.renderHomePage()
                 }}/>
                 <Route path={'/join'} component={JoinRoomPage}/>
                 <Route path={'/create'} component={CreateRoomPage}/>
-                <Route path={'/room/:roomCode'} component={Room}/>
+                <Route path={'/room/:roomCode'} render={(props) => {
+                    return <Room {...props} leaveRoomCallback={this._clearRoomCode}/>
+                }}/>
             </Switch>
         </Router>)
     }
