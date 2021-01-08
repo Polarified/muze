@@ -97,6 +97,8 @@ class UserInRoomView(APIView):
 
 class LeaveRoomView(APIView):
     def post(self, request, format=None):
+        if not request.session.exists(self.request.session.session_key):
+            self.request.session.create()
         if 'room_code' in self.request.session:
             self.request.session.pop('room_code')
             host_id = self.request.session.session_key

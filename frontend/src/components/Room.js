@@ -11,6 +11,7 @@ export default class Room extends Component {
             guestCanPause: false,
             isHost: false,
             showSettings: false,
+            spotifyAuthenticated: false,
         }
         this.roomCode = this.props.match.params.roomCode;
         this._getRoomDetails = this._getRoomDetails.bind(this);
@@ -18,7 +19,25 @@ export default class Room extends Component {
         this._updateShowSettings = this._updateShowSettings.bind(this);
         this._renderSettingsButton = this._renderSettingsButton.bind(this);
         this._renderSettings = this._renderSettings.bind(this);
+        this._authenticateSpotify = this._authenticateSpotify.bind(this);
         this._getRoomDetails();
+    }
+
+    _authenticateSpotify() {
+        fetch('/spotify/isauth')
+            .then((response)=> response.json())
+            .then((data) => {
+                this.setState({
+                    spotifyAuthenticated: data.status
+                });
+                if (!data.status) {
+                    fetch('/spotify/authurl')
+                        .then((response) => response.json())
+                        .then((data) => {
+                            window.location.replace(data.url);
+                        })
+                }
+            });
     }
 
     _getRoomDetails() {
@@ -33,7 +52,10 @@ export default class Room extends Component {
                 votesToSkip: data.votes_to_skip,
                 guestCanPause: data.guest_can_pause,
                 isHost: data.is_host,
-            })
+            });
+            if (this.state.isHost) {
+                this._authenticateSpotify()
+            }
         });
     }
 
@@ -62,7 +84,7 @@ export default class Room extends Component {
                     votesToSkip={this.state.votesToSkip}
                     guestCanPause={this.state.guestCanPause}
                     roomCode={this.roomCode}
-                    updateCallback={ this._getRoomDetails }
+                    updateCallback={this._getRoomDetails}
                 />
             </Grid>
             <Grid item xs={12}>
